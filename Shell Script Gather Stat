@@ -1,3 +1,30 @@
-#!/bin/kshexport ORACLE_SID=<ORACLE_SID>export ORACLE_BASE=/u01/app/oracleexport ORACLE_HOME=/u01/app/oracle/product/12.1.0.2cd /export/home/oracle/dba/scripts$ORACLE_HOME/bin/sqlplus "/as sysdba"  << eof
-set time onset timing onset echo on;spool /export/home/oracle/dba/scripts/Dbms_Incr_stats_FSTST8.log
-select 'Started at: '||to_char(sysdate,'DD-MON-YYYY HH24:MI:SS') from dual;select name from v\$database;exec dbms_stats.gather_schema_stats( -ownname          => 'SYSADM', -options          => 'GATHER AUTO', -estimate_percent => dbms_stats.auto_sample_size, -method_opt       => 'for all columns size repeat', -cascade          => true, -degree           => 8 -)select 'Finished at: '||to_char(sysdate,'DD-MON-YYYY HH24:MI:SS') from dual;spool off;eofstatus=$?if [ $status -eq 0 ]thenecho "Successful: $ORACLE_SID DB Stats"elseecho "NOT Successful: $ORACLE_SID DB Stats"fiexit $status
+#!/bin/ksh
+export ORACLE_SID=<ORACLE_SID>
+export ORACLE_BASE=/u01/app/oracle
+export ORACLE_HOME=/u01/app/oracle/product/12.1.0.2
+cd /export/home/oracle/dba/scripts
+$ORACLE_HOME/bin/sqlplus "/as sysdba"  << eof
+set time on
+set timing on
+set echo on;
+spool /export/home/oracle/dba/scripts/Dbms_Incr_stats_<ORACLE_SID>.log
+select 'Started at: '||to_char(sysdate,'DD-MON-YYYY HH24:MI:SS') from dual;
+select name from v\$database;
+exec dbms_stats.gather_schema_stats( -
+ownname          => 'SYSADM', -
+options          => 'GATHER AUTO', -
+estimate_percent => dbms_stats.auto_sample_size, -
+method_opt       => 'for all columns size repeat', -
+cascade          => true, -degree           => 8 -
+)
+select 'Finished at: '||to_char(sysdate,'DD-MON-YYYY HH24:MI:SS') from dual;
+spool off;
+eof
+status=$?
+if [ $status -eq 0 ]
+then
+echo "Successful: $ORACLE_SID DB Stats"
+else
+echo "NOT Successful: $ORACLE_SID DB Stats"
+fi
+exit $status
