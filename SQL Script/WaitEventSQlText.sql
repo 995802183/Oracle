@@ -1,0 +1,17 @@
+SELECT  
+  DISTINCT A.SQL_ID, 
+  B.NAME, 
+  TRIM(C.SQL_TEXT)
+FROM  
+  GV$ACTIVE_SESSION_HISTORY A, 
+  GV$EVENT_NAME B, 
+  GV$SQLAREA C
+WHERE  
+  B.NAME LIKE 'enq: KO%' AND 
+  A.INST_ID=B.INST_ID AND 
+  A.CON_ID=B.CON_ID AND 
+  C.SQL_ID=A.SQL_ID AND 
+  A.SAMPLE_TIME > SYSDATE - 1/24
+/
+You can use following to list top 50 SQL statement for wait event enq: KO%
+-- ROWNUM <51;
